@@ -129,13 +129,17 @@ module Rswag
       end
 
       def upgrade_content!(mime_list, target_node)
-        target_node.merge!(content: {})
+        target_node.merge!(content: {}) unless target_node[:content]
         schema = target_node[:schema]
         return if mime_list.empty? || schema.nil?
 
         mime_list.each do |mime_type|
           # TODO upgrade to have content-type specific schema
-          target_node[:content][mime_type] = { schema: schema }
+          if target_node[:content][mime_type]
+            target_node[:content][mime_type].merge!(schema: schema)
+          else
+            target_node[:content][mime_type] = { schema: schema }
+          end
         end
       end
 
